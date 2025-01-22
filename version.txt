@@ -1,0 +1,29 @@
+PYPEL - SISTEMA DE GERENCIAMENTO DE PAPELARIA 
+VERSÃO 0.01 - SISTEMA DE AUTENTICAÇÃO CONCLUIDO - 22/01/2025
+
+https://github.com/Gabriel-Augusto21/pypel
+Gabriel Augusto Gomides
+gomides.augustog@gmail.com
+
+1. ABNT 
+Gomides, Gabriel A. PYPEL - Sistema de Gerenciamento de Papelaria
+[S.1]: [S. n.], 2025, Disponível em https://github.com/Gabriel-Augusto21/pypel
+Acesso em:[ 22 jan. 2025]
+
+2. IEEE
+G. A. GOMIDES, "PYPEL - Sistema de Gerenciamento de Papelaria" {online}
+Disponível em https://github.com/Gabriel-Augusto21/pypel
+[Acesso em 22 jan. 2025]
+
+3. APA
+Gomides, G. A. (2025). PYPEL - Sistema de Gerenciamento de Papelaria.
+Acesso em: [22 jan. 2025], de https://github.com/Gabriel-Augusto21/pypel
+
+4. BibTex
+@misc{gomides2025pypel,
+     author = {Gomides, Gabriel Augusto},
+     title = {PYPEL - Sistema de Gerenciamento de Papelaria},
+     year = {2025},
+     howpublished = {\url{https://github.com/Gabriel-Augusto21/pypel}},
+     note = {\url{Acessado em: 22 jan. 2025}},
+}
