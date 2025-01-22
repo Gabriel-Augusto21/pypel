@@ -1,0 +1,32 @@
+Listagem de caminhos de pasta para o volume WIN11 HSL
+O número de série do volume é 26DC-16A0
+C:.
++---autenticacao
+¦   +---migrations
+¦   ¦   +---__pycache__
+¦   +---templates
+¦   +---__pycache__
++---cadastros
+¦   +---migrations
+¦   ¦   +---__pycache__
+¦   +---__pycache__
++---config
+¦   +---__pycache__
++---core
+¦   +---migrations
+¦   ¦   +---__pycache__
+¦   +---templates
+¦   +---__pycache__
++---resources
+¦   +---static
+¦       +---css
+¦       +---img
+¦       +---js
++---sistema
+¦   +---management
+¦   ¦   +---commands
+¦   ¦       +---__pycache__
+¦   +---migrations
+¦   ¦   +---__pycache__
+¦   +---__pycache__
++---_mockups
