@@ -2,7 +2,7 @@ from django.core.paginator import Paginator
 from django.shortcuts import render, redirect
 from django.http import JsonResponse
 from django.template.loader import render_to_string
-from django.db.models import Q, Count, F, Subquery, FloatField, Sum, ExpressionWrapper
+from django.db.models import Q, F, Count, Subquery, OuterRef, FloatField, Sum, ExpressionWrapper
 from .models import Usuario, Perfil, Departamento
 from django.contrib import messages
 from django.conf import settings
@@ -14,17 +14,97 @@ from django.http import HttpResponse
 #CADASTRO DE DEPARTAMENTOS
 @login_required
 def departamentos(request):
-    if request.session.get('perfil_atual') not in ('Administrador'):
-        messages.error(request, 'Você não é administrador')
+    if request.session.get('perfil_atual') not in {'Administrador'}:
+        messages.error(request, 'Você não é administrador!')
         return redirect('core:main')
+    
+    if request.method == "POST":
+        acao = request.POST.get("btnAcao")
 
-    if request.method == 'POST':
-        messages.success(request, 'Implementar depois')
+        if acao == "novo_departamento":
+            nome = request.POST.get('txtNome')
+            
+            if (nome.strip().lower() == 'Geral'):
+                messages.error(request, 'Você não pode cadastrar um departamento chamado "Geral", pois esse nome é reservado para o sistema! Use outro.')
+                return redirect('cadastros:departamentos')
+            
+            sigla = request.POST.get('txtSigla')
+
+            if Departamento.objects.filter(nome=nome).exists():
+                messages.error(request, 'Nome de departamento já cadastrado nesta unidade!')
+                return redirect('cadastros:departamentos')
+
+            departamento = Departamento(
+                nome=nome,
+                sigla=sigla,
+            )
+            
+            departamento.save()
+
+            messages.success(request, 'Departamento cadastrado com sucesso!')
+            return redirect('cadastros:departamentos')
+        
+        elif acao =='alterar_departamento':
+            departamento_id = request.POST.get('txtId')
+            departamento = Departamento.objects.get(id=departamento_id)
+
+            nome = request.POST.get('txtNome')
+            sigla = request.POST.get('txtSigla')
+
+            if (nome == 'Geral' or Departamento.objects.filter(nome=nome).exists()):
+                messages.error(request, 'Você não pode cadastrar um departamento chamado "Geral", pois esse nome é reservado para o sistema! Use outro.')
+                return redirect('cadastros:departamentos')
+            
+            departamento.nome = nome
+            departamento.sigla = sigla
+            departamento.save()
+
+            messages.success(request, 'Departamento alterado com sucesso')
+            return redirect('cadastros:departamentos')
+
 
     departamento_lista = Departamento.objects.all().exclude(nome__iexact="Geral").order_by('nome')
     paginator = Paginator(departamento_lista, settings.NUMBER_GRID_PAGES)
-    numbero_pagina = request.GET.get('page')
-    page_obj = paginator.get_page(numbero_pagina)
+    numero_pagina = request.GET.get('page')
+    page_obj = paginator.get_page(numero_pagina)
 
     return render(request, 'departamentos.html', {'page_obj': page_obj})
 
+@login_required
+def obter_departamento_por_id(request):
+    departamento_id = request.GET.get('departamento_id', None)
+    departamento = Departamento.objects.get(id=departamento_id)
+
+    departamento_dados = {
+        'id': departamento.id,
+        'nome': departamento.nome,
+        'sigla': departamento.sigla
+    }
+
+    return JsonResponse(departamento_dados)
+
+@login_required
+def excluir_departamento(request):
+    if request.method == 'POST':
+        departamento_id = request.POST.get('departamento_id')
+        departamento = Departamento.objects.filter(id=departamento_id).first()
+
+        if (departamento.usuario_set.exists()):
+            return JsonResponse({'success': False, 'messages' :'Não é possível excluir este departamento, pois ele possui usuários vinculados.'})
+
+        departamento.delete()
+
+        return JsonResponse({'success': True, 'messages' :'Departamento excluído com sucesso!'})
+
+@login_required
+def pesquisar_departamento_por_nome(request):
+    departamento_nome = request.GET.get('departamento_nome', '')
+    numero_pagina = request.GET.get('page')
+
+    departamento_lista = Departamento.objects.filter(nome__icontains=departamento_nome).exclude(nome__iexact="Geral").order_by('nome')
+    paginator = Paginator(departamento_lista, settings.NUMBER_GRID_PAGES)
+    page_obj = paginator.get_page(numero_pagina)
+
+    return JsonResponse({
+        'html': render_to_string('departamentos_table.html', {'page_obj': page_obj, 'query': departamento_nome, 'request': request})
+    })
